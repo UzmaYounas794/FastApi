@@ -12,7 +12,7 @@
 # Survey App using Fast API
 ## features
 
-1. User Autorization and Authentication
+1. User Authorization and Authentication
 2. CRUD functionality
 
 
