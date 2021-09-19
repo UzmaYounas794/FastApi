@@ -7,7 +7,7 @@ from .models import Question, Choice
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import  jwt
+from jose import jwt
 
 
 from . import models, schemas
@@ -43,6 +43,7 @@ def get_question_obj(db, qid):
     if obj is None:
         raise HTTPException(status_code=404, detail="Question not found")
     return obj
+
 
 def get_user_obj(db, uid):
     obj = get_user_by_id(db=db, uid=uid)
@@ -83,7 +84,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
     return encoded_jwt
-
 
 
 def create_question(db: Session, question: schemas.QuestionCreate):

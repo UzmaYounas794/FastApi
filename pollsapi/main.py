@@ -3,7 +3,7 @@ from . import schemas
 from . import models
 from . import crud
 from jose import JWTError, jwt
-from fastapi.security import  OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 
 from datetime import timedelta
 from typing import List
@@ -50,6 +50,7 @@ def get_current_user(
     if user is None:
         raise credential_exception
     return user
+
 
 #
 # @app.post("/login", response_model=schemas.Token)
@@ -108,13 +109,12 @@ async def login_for_access_token(
 @app.post("/questions/", response_model=schemas.QuestionInfo)
 def create_question(
     question: schemas.QuestionCreate,
-    x_token: str = Header(...),
-    #current_user: models.User = Depends(get_current_user),
-
+    # x_token: str = Header(...),
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if x_token != fake_secret_token:
-        raise HTTPException(status_code=400, detail="Invalid X-Token header")
+    # if x_token != fake_secret_token:
+    #     raise HTTPException(status_code=400, detail="Invalid X-Token header")
     return crud.create_question(db, question)
 
 
@@ -123,16 +123,15 @@ def get_questions(db: Session = Depends(get_db)):
     return crud.get_all_questions(db=db)
 
 
-
 @app.get("/questions/{qid}", response_model=QuestionInfo)
 def get_question(
     qid: int,
     db: Session = Depends(get_db),
-     x_token: str = Header(...),
-    #current_user: models.User = Depends(get_current_user),
+    # x_token: str = Header(...),
+    current_user: models.User = Depends(get_current_user),
 ):
-    if x_token != fake_secret_token:
-        raise HTTPException(status_code=400, detail="Invalid X-Token header")
+    # if x_token != fake_secret_token:
+    #     raise HTTPException(status_code=400, detail="Invalid X-Token header")
     return crud.get_question_obj(db=db, qid=qid)
 
 
@@ -144,7 +143,6 @@ def edit_question(
     db: Session = Depends(get_db),
 ):
 
-    # get_user_obj(db=db, uid=uid)
     user_created = crud.get_question_obj(db=db, qid=qid)
 
     if user_created.user_id == current_user:
@@ -178,7 +176,6 @@ def create_choice(
 ):
     crud.get_question_obj(db=db, qid=qid)
     return crud.create_choices(db=db, qid=qid, choice=choice)
-
 
 
 @app.put("/choices/{choice_id}/vote", response_model=schemas.ChoiceList)
